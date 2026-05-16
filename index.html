@@ -1298,38 +1298,37 @@ async function searchByISBN() {
   window._isbnData = null;
 
   try {
-    // Open Library API (CORS 허용, 무료, 키 불필요)
-    const url = `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscop=data`;
+    // Open Library API — jscmd=data 가 올바른 파라미터
+    const isbnClean = isbn.replace(/-/g, '');
+    const url = `https://openlibrary.org/api/books?bibkeys=ISBN:${isbnClean}&format=json&jscmd=data`;
     const res  = await fetch(url);
     const json = await res.json();
-    const key  = `ISBN:${isbn}`;
+    const key  = `ISBN:${isbnClean}`;
     const book = json[key];
 
     loadingEl.style.display = 'none';
 
     if(!book) {
-      // Open Library에 없으면 제목 검색 안내
       errorEl.textContent = '검색 결과가 없어요. 제목·저자를 직접 입력해 주세요.';
       errorEl.style.display = 'block';
       return;
     }
 
-    // 데이터 파싱
-    const title     = book.title || '';
-    const authors   = book.authors  ? book.authors.map(a=>a.name).join(', ')  : '';
-    const publishers= book.publishers ? book.publishers.map(p=>p.name).join(', ') : '';
-    const coverUrl  = book.cover ? (book.cover.large || book.cover.medium || book.cover.small || '') : '';
-    const publishDate = book.publish_date || '';
+    const title      = book.title || '';
+    const author     = book.authors    ? book.authors.map(a=>a.name).join(', ')    : '';
+    const publisher  = book.publishers ? book.publishers.map(p=>p.name).join(', '): '';
+    const coverUrl   = book.cover ? (book.cover.large || book.cover.medium || book.cover.small || '') : '';
+    const publishDate= book.publish_date || '';
 
-    window._isbnData = { title, authors, publishers, coverUrl, publishDate };
+    window._isbnData = { title, author, publisher, coverUrl, publishDate };
 
     bodyEl.innerHTML = `
       <div style="display:flex;gap:10px;align-items:flex-start">
         ${coverUrl ? `<img src="${coverUrl}" style="width:44px;height:62px;object-fit:cover;border-radius:4px;flex-shrink:0">` : ''}
         <div>
           <div style="font-weight:700;color:var(--text);margin-bottom:3px">${esc(title)}</div>
-          ${authors    ? `<div style="color:var(--text3);font-size:0.78rem">${esc(authors)}</div>` : ''}
-          ${publishers ? `<div style="color:var(--text3);font-size:0.78rem">${esc(publishers)}</div>` : ''}
+          ${author     ? `<div style="color:var(--text3);font-size:0.78rem">${esc(author)}</div>`     : ''}
+          ${publisher  ? `<div style="color:var(--text3);font-size:0.78rem">${esc(publisher)}</div>`  : ''}
           ${publishDate? `<div style="color:var(--text4);font-size:0.72rem;margin-top:2px">${esc(publishDate)}</div>` : ''}
         </div>
       </div>`;
@@ -1346,10 +1345,10 @@ function applyISBNResult() {
   const data = window._isbnData;
   if(!data) return;
 
-  if(data.title)      document.getElementById('bm-title').value     = data.title;
-  if(data.authors)    document.getElementById('bm-author').value    = data.authors;
-  if(data.publishers) document.getElementById('bm-publisher').value = data.publishers;
-  if(data.coverUrl)   document.getElementById('bm-coverurl').value  = data.coverUrl;
+  if(data.title)     document.getElementById('bm-title').value     = data.title;
+  if(data.author)    document.getElementById('bm-author').value    = data.author;
+  if(data.publisher) document.getElementById('bm-publisher').value = data.publisher;
+  if(data.coverUrl)  document.getElementById('bm-coverurl').value  = data.coverUrl;
 
   updateCoverPreview();
   document.getElementById('isbn-result').style.display = 'none';
