@@ -628,7 +628,7 @@ let detailBookId  = null;
 // ★ Google Sheets 연동 설정
 //   Apps Script 웹앱 배포 후 URL을 아래에 붙여넣기
 // ══════════════════════════════════════
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwnu0DqHm_UsUjSEPBFHcnNV8cOQ6Zq7U8AJs6Hr4DpbdkrNEKGWfx0IL_OsQMapsZ2/exec';
+const GAS_URL = ''; // 예: 'https://script.google.com/macros/s/XXXX/exec'
 
 function loadData(key) { try { return JSON.parse(localStorage.getItem(key)||'[]'); } catch { return []; } }
 function saveData(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
@@ -1171,7 +1171,6 @@ async function deleteSentence() {
   showToast('삭제됐습니다','ok');
   renderSentList();
   await sheetDeleteSentence(deletedId); // ☁️ 시트에서도 삭제
-}
 }
 
 function renderSentList() {
