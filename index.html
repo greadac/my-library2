@@ -424,12 +424,31 @@ input[type="color"] { padding: 4px; height: 38px; cursor: pointer; }
 
 <!-- ══ 설정 탭 ══ -->
 <div class="page" id="page-settings">
+
+  <!-- 구글 시트 연동 카드 -->
   <div class="card">
-    <div class="card-title">💾 데이터 관리</div>
-    <p style="font-size:0.81rem;color:var(--text3);margin-bottom:14px;line-height:1.7">
-      모든 데이터는 이 기기 브라우저에 저장됩니다.<br>
-      정기적으로 백업해두세요.
-    </p>
+    <div class="card-title">☁️ Google Sheets 연동</div>
+    <div id="gas-status-bar" style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:10px 12px;border-radius:8px;background:var(--surface2);border:1px solid var(--surface3)">
+      <span id="gas-status-dot" style="width:8px;height:8px;border-radius:50%;background:var(--text4);flex-shrink:0"></span>
+      <span id="gas-status-text" style="font-size:0.78rem;color:var(--text3)">연동 안 됨</span>
+    </div>
+    <label style="margin-top:0">Apps Script 웹앱 URL</label>
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <input type="url" id="gas-url-input" placeholder="https://script.google.com/macros/s/.../exec" style="flex:1;font-size:0.8rem">
+      <button onclick="saveGasUrl()" style="background:var(--amber);border:none;border-radius:var(--radius-sm);color:#1a1408;font-size:0.82rem;font-weight:700;padding:0 14px;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0">저장</button>
+    </div>
+    <button class="export-row" onclick="syncFromSheet()">
+      <span class="export-icon">🔄</span>
+      <div><div class="export-name">시트에서 불러오기</div><div class="export-desc">Google Sheets → 앱 동기화</div></div>
+    </button>
+    <button class="export-row" onclick="syncAllToSheet()">
+      <span class="export-icon">☁️</span>
+      <div><div class="export-name">시트로 전체 올리기</div><div class="export-desc">앱 전체 데이터 → Google Sheets</div></div>
+    </button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💾 로컬 백업</div>
     <button class="export-row" onclick="exportData()">
       <span class="export-icon">📤</span>
       <div><div class="export-name">데이터 내보내기</div><div class="export-desc">JSON 파일로 백업</div></div>
@@ -440,12 +459,13 @@ input[type="color"] { padding: 4px; height: 38px; cursor: pointer; }
     </button>
     <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
   </div>
+
   <div class="card">
     <div class="card-title">ℹ️ 앱 정보</div>
     <p style="font-size:0.81rem;color:var(--text3);line-height:1.9">
-      나의 서재 v1.0<br>
+      나의 서재 v2.0<br>
       도서목록 · 완독기록 · 문장수집 통합 앱<br>
-      <span style="color:var(--text4);font-size:0.74rem">데이터: 브라우저 localStorage</span>
+      <span style="color:var(--text4);font-size:0.74rem">제작자 인스타 @greada_2</span>
     </p>
   </div>
 </div>
@@ -625,10 +645,35 @@ let selectedStars = 0;
 let detailBookId  = null;
 
 // ══════════════════════════════════════
-// ★ Google Sheets 연동 설정
-//   Apps Script 웹앱 배포 후 URL을 아래에 붙여넣기
+// ★ Google Sheets 연동
 // ══════════════════════════════════════
-const GAS_URL = ''; // 예: 'https://script.google.com/macros/s/XXXX/exec'
+let GAS_URL = localStorage.getItem('gas_url') || '';
+
+function saveGasUrl() {
+  const input = document.getElementById('gas-url-input').value.trim();
+  if (!input || !input.startsWith('https://script.google.com')) {
+    showToast('올바른 Apps Script URL을 입력하세요', 'err'); return;
+  }
+  GAS_URL = input;
+  localStorage.setItem('gas_url', GAS_URL);
+  updateGasStatus(true);
+  showToast('✅ URL 저장됐습니다! 시트에서 불러오기를 눌러보세요', 'ok');
+}
+
+function updateGasStatus(connected) {
+  const dot  = document.getElementById('gas-status-dot');
+  const text = document.getElementById('gas-status-text');
+  if (!dot) return;
+  if (connected) {
+    dot.style.background  = 'var(--green)';
+    text.textContent = '연동됨 — ' + GAS_URL.slice(0, 40) + '...';
+    text.style.color = 'var(--green)';
+  } else {
+    dot.style.background  = 'var(--text4)';
+    text.textContent = '연동 안 됨 — 위에 URL을 입력하세요';
+    text.style.color = 'var(--text3)';
+  }
+}
 
 function loadData(key) { try { return JSON.parse(localStorage.getItem(key)||'[]'); } catch { return []; } }
 function saveData(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
@@ -697,13 +742,38 @@ async function sheetDeleteSentence(id) {
   catch(e) { console.warn('[GAS] deleteSentence 실패:', e); }
 }
 
+// ──────────────────────────────────────
+// 전체 데이터를 시트로 올리기
+// ──────────────────────────────────────
+async function syncAllToSheet() {
+  if (!GAS_URL) { showToast('먼저 URL을 저장하세요', 'err'); return; }
+  showToast('☁️ 시트로 올리는 중...', '');
+  try {
+    for (const book of books) {
+      await gasCall('saveBook', book);
+    }
+    for (const sent of sentences) {
+      await gasCall('saveSentence', sent);
+    }
+    showToast(`✅ 완료! 책 ${books.length}권, 문장 ${sentences.length}개`, 'ok');
+  } catch(e) {
+    showToast('업로드 실패: ' + e.message, 'err');
+  }
+}
+
 // ══════════════════════════════════════
 // 초기화
 // ══════════════════════════════════════
 window.onload = async () => {
   buildColorPalette();
-  renderAll();            // 로컬 데이터 먼저 표시
-  await syncFromSheet();  // 시트에서 최신 데이터 불러오기
+  // 저장된 URL 입력란에 채우기
+  if (GAS_URL) {
+    const input = document.getElementById('gas-url-input');
+    if (input) input.value = GAS_URL;
+    updateGasStatus(true);
+  }
+  renderAll();
+  if (GAS_URL) await syncFromSheet();
 };
 
 function renderAll() {
