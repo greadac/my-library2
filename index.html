@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>📚 나의 서재</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExNSIgZmlsbD0iIzE0MTEwYyIvPgogIDx0ZXh0IHg9IjI1NiIgeT0iMzQwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjMwMCI+8J+TmjwvdGV4dD4KPC9zdmc+">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExNSIgZmlsbD0iIzE0MTEwYyIvPgogIDx0ZXh0IHg9IjI1NiIgeT0iMzQwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjMwMCI+8J+TmjwvdGV4dD4KPC9zdmc+">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="나의 서재">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#14110c">
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #14110c;
+  --bg2:      #1c1810;
+  --surface:  #231f18;
+  --surface2: #2e2820;
+  --surface3: #3a322a;
+  --amber:    #c9933a;
+  --amber2:   #e8b660;
+  --amber-dim:#7a5a20;
+  --green:    #5a8c60;
+  --blue:     #4a6a8a;
+  --red:      #9a4a3a;
+  --gold:     #b8942a;
+  --text:     #e8e0d0;
+  --text2:    #b8aa98;
+  --text3:    #7a6e60;
+  --text4:    #4a4038;
+  --radius:   14px;
+  --radius-sm:9px;
+  --shadow:   0 2px 16px rgba(0,0,0,0.4);
+  --shadow-lg:0 8px 32px rgba(0,0,0,0.6);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif;
+  min-height: 100vh;
+  padding-bottom: 100px;
+  background-image:
+    radial-gradient(ellipse at 0% 0%, rgba(201,147,58,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 100%, rgba(90,140,96,0.04) 0%, transparent 50%);
+}
+
+/* ── 헤더 ── */
+header {
+  background: linear-gradient(160deg, var(--surface) 0%, var(--bg2) 100%);
+  border-bottom: 1px solid var(--surface3);
+  padding: 20px 18px 14px;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.5);
+}
+.header-row { display: flex; align-items: flex-end; justify-content: space-between; }
+.header-title {
+  font-family: 'Nanum Myeongjo', serif;
+  font-size: 1.5rem; font-weight: 800;
+  color: var(--amber2); letter-spacing: -0.5px; line-height: 1;
+}
+.header-sub { font-size: 0.75rem; color: var(--text3); margin-top: 4px; }
+.header-stats {
+  display: flex; gap: 12px; align-items: center;
+}
+.stat-pill {
+  text-align: center;
+  background: var(--surface2); border-radius: 8px;
+  padding: 5px 10px; border: 1px solid var(--surface3);
+}
+.stat-num { font-size: 1rem; font-weight: 800; color: var(--amber); display: block; line-height: 1; }
+.stat-label { font-size: 0.62rem; color: var(--text3); }
+
+/* ── 탭 ── */
+.tabs {
+  display: flex; background: var(--surface);
+  border-bottom: 1px solid var(--surface3);
+  overflow-x: auto; scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  flex: 1; min-width: 70px; padding: 12px 4px;
+  text-align: center; font-size: 0.74rem; font-weight: 700;
+  color: var(--text3); cursor: pointer;
+  border-bottom: 2.5px solid transparent;
+  transition: all 0.2s; white-space: nowrap;
+}
+.tab.active { color: var(--amber); border-bottom-color: var(--amber); background: rgba(201,147,58,0.06); }
+.tab-icon { font-size: 1rem; display: block; margin-bottom: 2px; }
+
+/* ── 페이지 ── */
+.page { display: none; padding: 14px; }
+.page.active { display: block; animation: fadeIn 0.2s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── 카드 ── */
+.card {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 16px; margin-bottom: 12px;
+  border: 1px solid var(--surface3); box-shadow: var(--shadow);
+}
+.card-title {
+  font-size: 0.76rem; font-weight: 800; color: var(--text3);
+  text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 14px;
+}
+
+/* ── 폼 ── */
+label { display: block; font-size: 0.76rem; color: var(--text3); margin-bottom: 5px; margin-top: 13px; font-weight: 500; }
+label:first-of-type { margin-top: 0; }
+input, select, textarea {
+  width: 100%; background: var(--bg2);
+  border: 1.5px solid var(--surface3);
+  border-radius: var(--radius-sm); color: var(--text);
+  font-size: 0.93rem; padding: 11px 13px; outline: none;
+  transition: border-color 0.2s;
+  font-family: 'Noto Sans KR', sans-serif;
+  -webkit-appearance: none; appearance: none;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--amber); background: var(--surface); }
+textarea { resize: vertical; min-height: 90px; line-height: 1.7; }
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%237a6e60' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 13px center;
+  background-color: var(--bg2); padding-right: 34px;
+}
+input[type="color"] { padding: 4px; height: 38px; cursor: pointer; }
+
+/* ── 버튼 ── */
+.btn {
+  display: block; width: 100%; padding: 13px;
+  border: none; border-radius: var(--radius-sm);
+  font-size: 0.92rem; font-weight: 700; cursor: pointer;
+  transition: all 0.15s; font-family: 'Noto Sans KR', sans-serif;
+}
+.btn-amber { background: var(--amber); color: #1a1408; }
+.btn-amber:active { background: var(--amber-dim); transform: scale(0.98); }
+.btn-ghost { background: var(--surface2); color: var(--text2); border: 1px solid var(--surface3); }
+.btn-ghost:active { background: var(--surface3); }
+.btn-danger { background: var(--red); color: #fff; }
+.btn-green { background: var(--green); color: #fff; }
+.btn-sm { display: inline-block; width: auto; padding: 7px 13px; font-size: 0.8rem; }
+.btn-row { display: flex; gap: 8px; margin-top: 16px; }
+.btn-row .btn { flex: 1; }
+
+/* ── 필터 ── */
+.filter-row {
+  display: flex; gap: 6px; margin-bottom: 12px;
+  overflow-x: auto; scrollbar-width: none; padding-bottom: 2px;
+}
+.filter-row::-webkit-scrollbar { display: none; }
+.filter-chip {
+  flex-shrink: 0; padding: 6px 13px; border-radius: 20px;
+  border: 1.5px solid var(--surface3); background: var(--surface);
+  color: var(--text3); font-size: 0.75rem; font-weight: 700;
+  cursor: pointer; font-family: 'Noto Sans KR', sans-serif;
+  transition: all 0.13s; white-space: nowrap;
+}
+.filter-chip.active { border-color: var(--amber); color: var(--amber); background: rgba(201,147,58,0.08); }
+
+/* ── 책 목록 아이템 ── */
+.book-item {
+  display: flex; gap: 13px; align-items: flex-start;
+  background: var(--surface2); border-radius: var(--radius-sm);
+  padding: 13px; margin-bottom: 8px;
+  cursor: pointer; transition: background 0.13s;
+  border: 1px solid var(--surface3);
+}
+.book-item:active { background: var(--surface3); }
+
+/* ── 책 표지 (색상 기반) ── */
+.book-cover {
+  width: 46px; height: 66px; border-radius: 4px;
+  flex-shrink: 0; display: flex; align-items: center;
+  justify-content: center; font-size: 1.2rem;
+  font-weight: 900; color: rgba(255,255,255,0.8);
+  font-family: 'Nanum Myeongjo', serif;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+  position: relative; overflow: hidden;
+  letter-spacing: -1px; line-height: 1;
+  text-align: center; padding: 4px;
+}
+.book-cover::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 40%; background: rgba(255,255,255,0.08);
+}
+.book-cover-spine {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 4px; background: rgba(0,0,0,0.2);
+}
+
+.book-info { flex: 1; min-width: 0; }
+.book-title {
+  font-family: 'Nanum Myeongjo', serif;
+  font-size: 0.92rem; font-weight: 700; margin-bottom: 3px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  color: var(--text);
+}
+.book-author { font-size: 0.75rem; color: var(--text3); margin-bottom: 6px; }
+.book-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+.status-badge {
+  display: inline-block; font-size: 0.68rem; font-weight: 700;
+  padding: 2px 8px; border-radius: 5px;
+}
+.s-읽는중   { background: rgba(90,140,96,0.2);   color: var(--green); }
+.s-완독     { background: rgba(201,147,58,0.2);  color: var(--amber); }
+.s-읽고싶음 { background: rgba(74,106,138,0.2);  color: var(--blue); }
+.s-중단     { background: rgba(122,110,96,0.15); color: var(--text3); }
+
+.rating-stars { font-size: 0.75rem; color: var(--gold); }
+
+/* ── 완독 그리드 ── */
+.done-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+.done-card {
+  border-radius: var(--radius-sm); overflow: hidden;
+  cursor: pointer; transition: transform 0.15s;
+  border: 1px solid var(--surface3);
+}
+.done-card:active { transform: scale(0.96); }
+.done-cover {
+  width: 100%; aspect-ratio: 2/3;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Nanum Myeongjo', serif;
+  font-size: 1.4rem; font-weight: 900;
+  color: rgba(255,255,255,0.75); padding: 8px; text-align: center;
+  line-height: 1.2; position: relative; overflow: hidden;
+}
+.done-cover::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 35%; background: rgba(255,255,255,0.07);
+}
+.done-cover-spine {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 5px; background: rgba(0,0,0,0.25);
+}
+.done-title {
+  font-size: 0.72rem; font-weight: 700; padding: 6px 7px 8px;
+  line-height: 1.3; color: var(--text2);
+  background: var(--surface2);
+  overflow: hidden; display: -webkit-box;
+  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+}
+.done-rating { font-size: 0.68rem; color: var(--gold); padding: 0 7px 6px; background: var(--surface2); }
+
+/* ── 문장 수집 ── */
+.sentence-item {
+  background: var(--surface2);
+  border-left: 3px solid var(--amber-dim);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 12px 14px; margin-bottom: 8px;
+  cursor: pointer; transition: background 0.13s;
+}
+.sentence-item:active { background: var(--surface3); }
+.sent-text {
+  font-family: 'Nanum Myeongjo', serif;
+  font-style: italic; font-size: 0.88rem; line-height: 1.75;
+  color: var(--text2); margin-bottom: 6px;
+  overflow: hidden; display: -webkit-box;
+  -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+}
+.sent-meta { font-size: 0.72rem; color: var(--text3); }
+.sent-book-tag {
+  display: inline-block; font-size: 0.68rem; font-weight: 700;
+  background: rgba(201,147,58,0.12); color: var(--amber);
+  padding: 2px 8px; border-radius: 5px; margin-bottom: 6px;
+}
+
+/* ── 섹션 라벨 ── */
+.section-label {
+  font-size: 0.68rem; font-weight: 800; color: var(--text4);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin: 16px 0 8px; padding-left: 2px;
+}
+
+/* ── 구분선 ── */
+.divider { height: 1px; background: var(--surface3); margin: 14px 0; }
+
+/* ── 모달 ── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.75); z-index: 200;
+  align-items: flex-end; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface);
+  border-radius: 20px 20px 0 0;
+  padding: 18px 18px 32px; width: 100%;
+  max-height: 92vh; overflow-y: auto;
+  animation: slideUp 0.25s cubic-bezier(.32,.72,0,1);
+  border-top: 1px solid var(--surface3);
+}
+@keyframes slideUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
+.modal-handle { width: 36px; height: 4px; background: var(--surface3); border-radius: 2px; margin: 0 auto 16px; }
+.modal-title {
+  font-family: 'Nanum Myeongjo', serif;
+  font-size: 1.05rem; font-weight: 800; color: var(--amber2); margin-bottom: 14px;
+}
+
+/* ── 책 상세 헤더 ── */
+.detail-header {
+  display: flex; gap: 14px; margin-bottom: 16px; align-items: flex-start;
+}
+.detail-cover {
+  width: 68px; height: 98px; border-radius: 5px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Nanum Myeongjo', serif;
+  font-size: 1.4rem; font-weight: 900; color: rgba(255,255,255,0.75);
+  box-shadow: 3px 3px 12px rgba(0,0,0,0.5);
+  position: relative; overflow: hidden; text-align: center; padding: 6px;
+}
+.detail-cover::after { content:''; position:absolute; top:0; left:0; right:0; height:35%; background:rgba(255,255,255,0.08); }
+.detail-cover-spine { position:absolute; left:0; top:0; bottom:0; width:5px; background:rgba(0,0,0,0.25); }
+.detail-info { flex: 1; min-width: 0; }
+.detail-title { font-family: 'Nanum Myeongjo', serif; font-size: 1rem; font-weight: 800; margin-bottom: 5px; line-height: 1.4; }
+.detail-meta { font-size: 0.78rem; color: var(--text3); line-height: 1.7; }
+
+/* ── 별점 입력 ── */
+.star-input { display: flex; gap: 4px; margin-top: 6px; }
+.star-input span {
+  font-size: 1.4rem; cursor: pointer; transition: transform 0.1s;
+  color: var(--surface3); user-select: none;
+}
+.star-input span.lit { color: var(--gold); }
+.star-input span:active { transform: scale(1.2); }
+
+/* ── 설정 내보내기 ── */
+.export-row {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--surface2); border: 1px solid var(--surface3);
+  border-radius: var(--radius-sm); padding: 13px;
+  cursor: pointer; margin-bottom: 8px; transition: background 0.13s;
+  width: 100%;
+}
+.export-row:active { background: var(--surface3); }
+.export-icon { font-size: 1.3rem; }
+.export-name { font-size: 0.88rem; font-weight: 700; color: var(--text); }
+.export-desc { font-size: 0.74rem; color: var(--text3); margin-top: 1px; }
+
+/* ── FAB ── */
+.fab {
+  position: fixed; bottom: 24px; right: 18px;
+  width: 52px; height: 52px; background: var(--amber);
+  color: #1a1408; border: none; border-radius: 50%;
+  font-size: 1.5rem; cursor: pointer; z-index: 50;
+  box-shadow: 0 4px 20px rgba(201,147,58,0.4);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.15s;
+}
+.fab:active { transform: scale(0.93); }
+
+/* ── 토스트 ── */
+.toast {
+  position: fixed; bottom: 88px; left: 50%;
+  transform: translateX(-50%) translateY(14px);
+  background: var(--surface2); color: var(--text);
+  padding: 10px 20px; border-radius: 24px;
+  font-size: 0.84rem; font-weight: 600;
+  box-shadow: var(--shadow-lg); border: 1px solid var(--surface3);
+  opacity: 0; transition: all 0.26s; z-index: 999; white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.ok  { border-color: var(--green); color: var(--green); }
+.toast.err { border-color: var(--red);   color: var(--red); }
+
+/* ── 빈 상태 ── */
+.empty { text-align: center; padding: 36px 16px; color: var(--text3); }
+.empty .icon { font-size: 2.8rem; margin-bottom: 10px; }
+.empty p { font-size: 0.84rem; line-height: 1.7; }
+
+/* ── 진행률 바 ── */
+.progress-bar-wrap { background: var(--surface3); border-radius: 4px; height: 5px; margin-top: 8px; }
+.progress-bar { height: 100%; border-radius: 4px; background: var(--amber); transition: width 0.3s; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-row">
+    <div>
+      <div class="header-title">📚 나의 서재</div>
+      <div class="header-sub" id="header-sub">독서기록장</div>
+    </div>
+    <div class="header-stats">
+      <div class="stat-pill"><span class="stat-num" id="stat-total">0</span><span class="stat-label">전체</span></div>
+      <div class="stat-pill"><span class="stat-num" id="stat-done">0</span><span class="stat-label">완독</span></div>
+      <div class="stat-pill"><span class="stat-num" id="stat-reading">0</span><span class="stat-label">읽는중</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('books')"><span class="tab-icon">📖</span>도서목록</div>
+  <div class="tab" onclick="switchTab('done')"><span class="tab-icon">🏆</span>완독</div>
+  <div class="tab" onclick="switchTab('sentence')"><span class="tab-icon">✍️</span>문장수집</div>
+  <div class="tab" onclick="switchTab('settings')"><span class="tab-icon">⚙️</span>설정</div>
+</div>
+
+<!-- ══ 도서목록 탭 ══ -->
+<div class="page active" id="page-books">
+  <div class="filter-row" id="book-filter-row">
+    <button class="filter-chip active" onclick="setBookFilter('전체')">전체</button>
+    <button class="filter-chip" onclick="setBookFilter('읽는중')">📗 읽는 중</button>
+    <button class="filter-chip" onclick="setBookFilter('읽고싶음')">🔖 읽고 싶음</button>
+    <button class="filter-chip" onclick="setBookFilter('완독')">⭐ 완독</button>
+    <button class="filter-chip" onclick="setBookFilter('중단')">⏸ 중단</button>
+  </div>
+  <div id="book-list"></div>
+</div>
+
+<!-- ══ 완독 탭 ══ -->
+<div class="page" id="page-done">
+  <div id="done-wrap"></div>
+</div>
+
+<!-- ══ 문장수집 탭 ══ -->
+<div class="page" id="page-sentence">
+  <div id="sent-list"></div>
+</div>
+
+<!-- ══ 설정 탭 ══ -->
+<div class="page" id="page-settings">
+  <div class="card">
+    <div class="card-title">💾 데이터 관리</div>
+    <p style="font-size:0.81rem;color:var(--text3);margin-bottom:14px;line-height:1.7">
+      모든 데이터는 이 기기 브라우저에 저장됩니다.<br>
+      정기적으로 백업해두세요.
+    </p>
+    <button class="export-row" onclick="exportData()">
+      <span class="export-icon">📤</span>
+      <div><div class="export-name">데이터 내보내기</div><div class="export-desc">JSON 파일로 백업</div></div>
+    </button>
+    <button class="export-row" onclick="document.getElementById('import-file').click()">
+      <span class="export-icon">📥</span>
+      <div><div class="export-name">데이터 불러오기</div><div class="export-desc">JSON 백업 파일 복원</div></div>
+    </button>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+  </div>
+  <div class="card">
+    <div class="card-title">ℹ️ 앱 정보</div>
+    <p style="font-size:0.81rem;color:var(--text3);line-height:1.9">
+      나의 서재 v1.0<br>
+      도서목록 · 완독기록 · 문장수집 통합 앱<br>
+      <span style="color:var(--text4);font-size:0.74rem">데이터: 브라우저 localStorage</span>
+    </p>
+  </div>
+</div>
+
+<!-- ══ 책 추가/수정 모달 ══ -->
+<div class="modal-overlay" id="book-modal" onclick="closeModal('book-modal',event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="book-modal-title">📚 책 추가</div>
+
+    <!-- 표지 미리보기 -->
+    <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">
+      <div id="cover-preview-wrap" style="width:52px;height:76px;flex-shrink:0;border-radius:4px;overflow:hidden;box-shadow:2px 2px 8px rgba(0,0,0,0.4)">
+        <img id="cover-preview-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none">
+        <div id="cover-preview-color" class="book-cover" style="width:52px;height:76px;background:#5a3a1a">
+          <div class="book-cover-spine"></div>
+          <span id="cover-preview-text">책</span>
+        </div>
+      </div>
+      <div style="flex:1">
+        <label style="margin-top:0">표지 이미지 URL <span style="color:var(--text3);font-weight:400">(선택)</span></label>
+        <input type="url" id="bm-coverurl" placeholder="https://..." oninput="updateCoverPreview()">
+        <!-- 서점 앱 바로가기 -->
+        <div style="display:flex;gap:7px;margin-top:8px">
+          <button onclick="openBookStore('aladin')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:var(--surface2);border:1.5px solid var(--surface3);border-radius:var(--radius-sm);padding:9px 8px;cursor:pointer;font-family:inherit;transition:background 0.13s" onmouseover="this.style.background='var(--surface3)'" onmouseout="this.style.background='var(--surface2)'">
+            <span style="font-size:1rem">📚</span>
+            <span style="font-size:0.78rem;font-weight:700;color:var(--amber)">알라딘</span>
+          </button>
+          <button onclick="openBookStore('kyobo')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:var(--surface2);border:1.5px solid var(--surface3);border-radius:var(--radius-sm);padding:9px 8px;cursor:pointer;font-family:inherit;transition:background 0.13s" onmouseover="this.style.background='var(--surface3)'" onmouseout="this.style.background='var(--surface2)'">
+            <span style="font-size:1rem">📖</span>
+            <span style="font-size:0.78rem;font-weight:700;color:var(--amber)">교보문고</span>
+          </button>
+          <button onclick="openBookStore('yes24')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:var(--surface2);border:1.5px solid var(--surface3);border-radius:var(--radius-sm);padding:9px 8px;cursor:pointer;font-family:inherit;transition:background 0.13s" onmouseover="this.style.background='var(--surface3)'" onmouseout="this.style.background='var(--surface2)'">
+            <span style="font-size:1rem">🛒</span>
+            <span style="font-size:0.78rem;font-weight:700;color:var(--amber)">YES24</span>
+          </button>
+        </div>
+        <div style="margin-top:7px;padding:9px 12px;background:rgba(201,147,58,0.07);border-radius:8px;border:1px solid rgba(201,147,58,0.2)">
+          <div style="font-size:0.72rem;color:var(--amber);font-weight:700;margin-bottom:3px">📋 표지 이미지 URL 복사하는 방법</div>
+          <div style="font-size:0.72rem;color:var(--text3);line-height:1.7">
+            서점에서 책 검색 → 표지 이미지를 <strong style="color:var(--text2)">길게 누르기</strong> → <strong style="color:var(--text2)">"이미지 주소 복사"</strong> → 위 입력란에 붙여넣기
+          </div>
+        </div>
+        <label>표지 색상 <span style="color:var(--text3);font-weight:400">(URL 없을 때)</span></label>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px" id="color-palette"></div>
+      </div>
+    </div>
+
+    <label>제목 *</label>
+    <input type="text" id="bm-title" placeholder="책 제목을 입력하세요" oninput="updateCoverPreview()">
+
+    <label>저자</label>
+    <input type="text" id="bm-author" placeholder="저자명">
+
+    <label>출판사</label>
+    <input type="text" id="bm-publisher" placeholder="출판사">
+
+    <label>ISBN</label>
+    <div style="display:flex;gap:8px">
+      <input type="number" id="bm-isbn" placeholder="13자리 숫자" inputmode="numeric" style="flex:1">
+      <button onclick="searchByISBN()" style="background:var(--amber);border:none;border-radius:var(--radius-sm);color:#1a1408;font-size:0.82rem;font-weight:700;padding:0 14px;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0">🔍 검색</button>
+    </div>
+    <!-- 검색 결과 -->
+    <div id="isbn-result" style="display:none;margin-top:10px;background:rgba(201,147,58,0.08);border:1px solid rgba(201,147,58,0.3);border-radius:var(--radius-sm);padding:12px">
+      <div style="font-size:0.72rem;color:var(--amber);font-weight:700;margin-bottom:6px">✅ 책 정보를 찾았어요!</div>
+      <div id="isbn-result-body" style="font-size:0.82rem;color:var(--text2);line-height:1.7"></div>
+      <button onclick="applyISBNResult()" style="margin-top:10px;width:100%;background:var(--amber);border:none;border-radius:var(--radius-sm);color:#1a1408;font-size:0.83rem;font-weight:700;padding:9px;cursor:pointer;font-family:inherit">✍️ 이 정보로 채우기</button>
+    </div>
+    <div id="isbn-loading" style="display:none;text-align:center;padding:12px;font-size:0.82rem;color:var(--text3)">🔍 검색 중...</div>
+    <div id="isbn-error" style="display:none;margin-top:8px;font-size:0.78rem;color:var(--red)"></div>
+
+    <label>상태</label>
+    <select id="bm-status">
+      <option value="읽고싶음">🔖 읽고 싶음</option>
+      <option value="읽는중">📗 읽는 중</option>
+      <option value="완독">⭐ 완독</option>
+      <option value="중단">⏸ 중단</option>
+    </select>
+
+    <label>별점 <span style="color:var(--text3);font-weight:400">(완독 시)</span></label>
+    <div class="star-input" id="bm-stars">
+      <span onclick="setStars(1)">★</span><span onclick="setStars(2)">★</span>
+      <span onclick="setStars(3)">★</span><span onclick="setStars(4)">★</span>
+      <span onclick="setStars(5)">★</span>
+    </div>
+
+    <label>메모</label>
+    <textarea id="bm-memo" placeholder="간단한 메모..."></textarea>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeModal('book-modal')">취소</button>
+      <button class="btn btn-amber" onclick="saveBook()">저장</button>
+    </div>
+    <div style="margin-top:8px" id="book-delete-wrap">
+      <button class="btn btn-danger" onclick="deleteBook()">🗑️ 삭제</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 책 상세 모달 ══ -->
+<div class="modal-overlay" id="detail-modal" onclick="closeModal('detail-modal',event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="detail-header">
+      <div class="detail-cover" id="detail-cover">
+        <div class="detail-cover-spine"></div>
+        <span id="detail-cover-text"></span>
+      </div>
+      <div class="detail-info">
+        <div class="detail-title" id="detail-title"></div>
+        <div class="detail-meta" id="detail-meta"></div>
+        <div id="detail-rating" style="margin-top:4px"></div>
+      </div>
+    </div>
+
+    <div id="detail-memo-block"></div>
+
+    <div style="margin-bottom:6px">
+      <div id="detail-progress" style="margin-bottom:10px"></div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <button class="btn btn-ghost btn-sm" style="flex:1" onclick="openSentModalFromDetail()">✍️ 문장 추가</button>
+      <button class="btn btn-ghost btn-sm" style="flex:1" onclick="editBookFromDetail()">✏️ 수정</button>
+    </div>
+    <div id="detail-sentences"></div>
+  </div>
+</div>
+
+<!-- ══ 문장 수집 모달 ══ -->
+<div class="modal-overlay" id="sent-modal" onclick="closeModal('sent-modal',event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">✍️ 문장 수집</div>
+    <label>책 선택</label>
+    <select id="sentm-bookid"></select>
+    <label>인상 깊은 문장 *</label>
+    <textarea id="sentm-text" placeholder="기록하고 싶은 문장을 적어보세요..." style="min-height:110px"></textarea>
+    <label>페이지 <span style="color:var(--text3);font-weight:400">(선택)</span></label>
+    <input type="number" id="sentm-page" placeholder="예) 142" inputmode="numeric">
+    <label>메모 <span style="color:var(--text3);font-weight:400">(선택)</span></label>
+    <input type="text" id="sentm-memo" placeholder="느낀 점, 생각...">
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeModal('sent-modal')">취소</button>
+      <button class="btn btn-amber" onclick="saveSentence()">저장</button>
+    </div>
+    <div style="margin-top:8px" id="sent-delete-wrap">
+      <button class="btn btn-danger" onclick="deleteSentence()">🗑️ 삭제</button>
+    </div>
+  </div>
+</div>
+
+<!-- FAB -->
+<button class="fab" id="fab-btn" onclick="fabAction()">+</button>
+
+<!-- 토스트 -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════
+// 상수 & 상태
+// ══════════════════════════════════════
+const COVER_COLORS = [
+  '#8B4513','#5C3A1A','#7A2C2C','#2C5A3A','#1A3A5C',
+  '#5C2A5C','#3A3A1A','#1A4A4A','#8B6914','#4A2C1A',
+  '#6A3A5A','#2A4A2A','#3A2A5C','#5A4A2A','#2A3A5C'
+];
+const KEYS = { books:'mylib_books', sentences:'mylib_sentences' };
+
+let books      = loadData(KEYS.books);
+let sentences  = loadData(KEYS.sentences);
+let bookFilter = '전체';
+let currentTab = 'books';
+let editingId  = { book: null, sent: null };
+let selectedColor = COVER_COLORS[0];
+let selectedStars = 0;
+let detailBookId  = null;
+
+// ══════════════════════════════════════
+// ★ Google Sheets 연동 설정
+//   Apps Script 웹앱 배포 후 URL을 아래에 붙여넣기
+// ══════════════════════════════════════
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwnu0DqHm_UsUjSEPBFHcnNV8cOQ6Zq7U8AJs6Hr4DpbdkrNEKGWfx0IL_OsQMapsZ2/exec';
+
+function loadData(key) { try { return JSON.parse(localStorage.getItem(key)||'[]'); } catch { return []; } }
+function saveData(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
+function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2,5); }
+
+// ──────────────────────────────────────
+// GAS API 호출
+// ──────────────────────────────────────
+async function gasCall(action, payload = {}) {
+  if (!GAS_URL) throw new Error('GAS_URL이 설정되지 않았습니다');
+  const url = GAS_URL + '?action=' + action;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(payload)
+  });
+  const json = await res.json();
+  if (json.error) throw new Error(json.error);
+  return json;
+}
+
+// ──────────────────────────────────────
+// 시트 동기화 (불러오기)
+// ──────────────────────────────────────
+async function syncFromSheet() {
+  if (!GAS_URL) return;
+  try {
+    showToast('☁️ 시트에서 불러오는 중...', '');
+    const data = await gasCall('getAll');
+    books     = data.books     || [];
+    sentences = data.sentences || [];
+    saveData(KEYS.books,     books);
+    saveData(KEYS.sentences, sentences);
+    renderAll();
+    showToast('✅ 동기화 완료!', 'ok');
+  } catch(e) {
+    showToast('⚠️ 동기화 실패 — 로컬 데이터 사용 중', 'err');
+    console.error('[GAS]', e);
+  }
+}
+
+// ──────────────────────────────────────
+// 책 저장/수정/삭제 → 시트 반영
+// ──────────────────────────────────────
+async function sheetSaveBook(book) {
+  if (!GAS_URL) return;
+  try { await gasCall('saveBook', book); }
+  catch(e) { console.warn('[GAS] saveBook 실패, 로컬만 저장:', e); }
+}
+
+async function sheetDeleteBook(id) {
+  if (!GAS_URL) return;
+  try { await gasCall('deleteBook', { id }); }
+  catch(e) { console.warn('[GAS] deleteBook 실패:', e); }
+}
+
+async function sheetSaveSentence(sent) {
+  if (!GAS_URL) return;
+  try { await gasCall('saveSentence', sent); }
+  catch(e) { console.warn('[GAS] saveSentence 실패, 로컬만 저장:', e); }
+}
+
+async function sheetDeleteSentence(id) {
+  if (!GAS_URL) return;
+  try { await gasCall('deleteSentence', { id }); }
+  catch(e) { console.warn('[GAS] deleteSentence 실패:', e); }
+}
+
+// ══════════════════════════════════════
+// 초기화
+// ══════════════════════════════════════
+window.onload = async () => {
+  buildColorPalette();
+  renderAll();            // 로컬 데이터 먼저 표시
+  await syncFromSheet();  // 시트에서 최신 데이터 불러오기
+};
+
+function renderAll() {
+  updateStats();
+  renderBookList();
+  renderDoneGrid();
+  renderSentList();
+}
+
+// ══════════════════════════════════════
+// 통계
+// ══════════════════════════════════════
+function updateStats() {
+  document.getElementById('stat-total').textContent   = books.length;
+  document.getElementById('stat-done').textContent    = books.filter(b=>b.status==='완독').length;
+  document.getElementById('stat-reading').textContent = books.filter(b=>b.status==='읽는중').length;
+  const year = new Date().getFullYear();
+  const doneYear = books.filter(b=>b.status==='완독'&&b.doneAt&&b.doneAt.startsWith(String(year))).length;
+  document.getElementById('header-sub').textContent = `올해 완독 ${doneYear}권 · 전체 ${books.length}권`;
+}
+
+// ══════════════════════════════════════
+// 탭
+// ══════════════════════════════════════
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.classList.toggle('active', ['books','done','sentence','settings'][i] === tab);
+  });
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+tab).classList.add('active');
+
+  const fab = document.getElementById('fab-btn');
+  if(tab==='sentence') { fab.textContent='✍️'; fab.style.display='flex'; }
+  else if(tab==='settings') { fab.style.display='none'; }
+  else if(tab==='done') { fab.style.display='none'; }
+  else { fab.textContent='+'; fab.style.display='flex'; }
+}
+
+function fabAction() {
+  if(currentTab==='sentence') openSentModal(null);
+  else openBookModal(null);
+}
+
+// ══════════════════════════════════════
+// 표지 컬러 팔레트
+// ══════════════════════════════════════
+function buildColorPalette() {
+  const palette = document.getElementById('color-palette');
+  COVER_COLORS.forEach((color, i) => {
+    const swatch = document.createElement('div');
+    swatch.style.cssText = `width:22px;height:22px;border-radius:4px;background:${color};cursor:pointer;border:2px solid transparent;transition:all 0.15s;flex-shrink:0`;
+    swatch.onclick = () => {
+      selectedColor = color;
+      document.querySelectorAll('#color-palette div').forEach(s => s.style.borderColor='transparent');
+      swatch.style.borderColor = '#e8b660';
+      updateCoverPreview();
+    };
+    if(i===0) swatch.style.borderColor='#e8b660';
+    palette.appendChild(swatch);
+  });
+}
+
+function updateCoverPreview() {
+  const title   = document.getElementById('bm-title').value.trim();
+  const initials = title ? title.slice(0,2) : '책';
+  const url      = document.getElementById('bm-coverurl').value.trim();
+  const img      = document.getElementById('cover-preview-img');
+  const colorDiv = document.getElementById('cover-preview-color');
+
+  document.getElementById('cover-preview-text').textContent = initials;
+  colorDiv.style.background = selectedColor;
+
+  if(url) {
+    img.src = url;
+    img.style.display = 'block';
+    colorDiv.style.display = 'none';
+  } else {
+    img.style.display = 'none';
+    colorDiv.style.display = 'flex';
+  }
+}
+
+// ══════════════════════════════════════
+// 별점
+// ══════════════════════════════════════
+function setStars(n) {
+  selectedStars = n;
+  document.querySelectorAll('#bm-stars span').forEach((s,i) => {
+    s.classList.toggle('lit', i < n);
+  });
+}
+function renderStars(n) {
+  if(!n) return '';
+  return '★'.repeat(n) + '☆'.repeat(5-n);
+}
+
+// ══════════════════════════════════════
+// 책 커버 HTML
+// ══════════════════════════════════════
+function esc(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function makeCoverEl(book, size='small') {
+  const initials = esc((book.title||'책').slice(0,2));
+  const color    = esc(book.color || COVER_COLORS[0]);
+  const url      = book.coverUrl ? esc(book.coverUrl) : '';
+
+  if(size==='small') {
+    if(url) return '<div class="book-cover" style="background:'+color+';padding:0;overflow:hidden">'
+      +'<img src="'+url+'" alt="'+initials+'" style="width:100%;height:100%;object-fit:cover;display:block">'
+      +'</div>';
+    return '<div class="book-cover" style="background:'+color+'">'
+      +'<div class="book-cover-spine"></div>'+initials+'</div>';
+  } else {
+    if(url) return '<div class="done-cover" style="background:'+color+';padding:0;overflow:hidden">'
+      +'<img src="'+url+'" alt="'+initials+'" style="width:100%;height:100%;object-fit:cover;display:block">'
+      +'</div>';
+    return '<div class="done-cover" style="background:'+color+'">'
+      +'<div class="done-cover-spine"></div>'+initials+'</div>';
+  }
+}
+
+// ══════════════════════════════════════
+// 책 목록
+// ══════════════════════════════════════
+function setBookFilter(f) {
+  bookFilter = f;
+  document.querySelectorAll('#book-filter-row .filter-chip').forEach(b => {
+    b.classList.toggle('active', b.textContent.includes(f) || (f==='전체' && b.textContent==='전체'));
+  });
+  renderBookList();
+}
+
+function renderBookList() {
+  const el = document.getElementById('book-list');
+  let filtered = bookFilter==='전체' ? books : books.filter(b=>b.status===bookFilter);
+  filtered = [...filtered].sort((a,b) => a.title.localeCompare(b.title,'ko'));
+
+  el.innerHTML = '';
+
+  if(!filtered.length) {
+    el.innerHTML = `<div class="empty"><div class="icon">📭</div><p>${bookFilter==='전체'?'아직 책이 없어요<br>+ 버튼으로 추가해보세요':'해당하는 책이 없습니다'}</p></div>`;
+    return;
+  }
+
+  filtered.forEach(b => {
+    const sentCount = sentences.filter(s=>s.bookId===b.id).length;
+    const item = document.createElement('div');
+    item.className = 'book-item';
+    item.onclick = () => openDetailModal(b.id);
+    item.innerHTML = makeCoverEl(b,'small');
+
+    const info = document.createElement('div');
+    info.className = 'book-info';
+
+    const title = document.createElement('div');
+    title.className = 'book-title';
+    title.textContent = b.title || '';
+
+    const author = document.createElement('div');
+    author.className = 'book-author';
+    author.textContent = [b.author, b.publisher].filter(Boolean).join(' · ');
+
+    const meta = document.createElement('div');
+    meta.className = 'book-meta';
+
+    const badge = document.createElement('span');
+    badge.className = `status-badge s-${b.status}`;
+    badge.textContent = statusLabel(b.status);
+    meta.appendChild(badge);
+
+    if(b.rating) {
+      const stars = document.createElement('span');
+      stars.className = 'rating-stars';
+      stars.textContent = '★'.repeat(b.rating);
+      meta.appendChild(stars);
+    }
+    if(sentCount) {
+      const sc = document.createElement('span');
+      sc.style.cssText = 'font-size:0.68rem;color:var(--text3)';
+      sc.textContent = `✍️ ${sentCount}`;
+      meta.appendChild(sc);
+    }
+
+    info.appendChild(title);
+    info.appendChild(author);
+    info.appendChild(meta);
+    item.appendChild(info);
+    el.appendChild(item);
+  });
+}
+
+function statusLabel(s) {
+  return {읽는중:'📗 읽는 중', 완독:'⭐ 완독', 읽고싶음:'🔖 읽고 싶음', 중단:'⏸ 중단'}[s]||s;
+}
+
+// ══════════════════════════════════════
+// 완독 그리드
+// ══════════════════════════════════════
+function renderDoneGrid() {
+  const el = document.getElementById('done-wrap');
+  const done = [...books.filter(b=>b.status==='완독')]
+    .sort((a,b) => (b.doneAt||'').localeCompare(a.doneAt||''));
+
+  if(!done.length) {
+    el.innerHTML = '<div class="empty"><div class="icon">🏆</div><p>아직 완독한 책이 없어요<br>첫 완독을 향해 화이팅!</p></div>';
+    return;
+  }
+
+  // 연도별 그룹
+  const byYear = {};
+  done.forEach(b => {
+    const yr = b.doneAt ? b.doneAt.slice(0,4) : '기타';
+    if(!byYear[yr]) byYear[yr]=[];
+    byYear[yr].push(b);
+  });
+
+  let html = '';
+  Object.keys(byYear).sort((a,b)=>b-a).forEach(yr => {
+    html += `<div class="section-label">📅 ${yr}년 (${byYear[yr].length}권)</div>
+    <div class="done-grid">
+      ${byYear[yr].map(b=>`
+        <div class="done-card" onclick="openDetailModal('${esc(b.id)}')">
+          ${makeCoverEl(b,'done')}
+          <div class="done-title">${esc(b.title)}</div>
+          ${b.rating?`<div class="done-rating">${'★'.repeat(b.rating)}</div>`:''}
+        </div>`).join('')}
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+
+// ══════════════════════════════════════
+// 책 추가/수정 모달
+// ══════════════════════════════════════
+function openBookModal(id) {
+  editingId.book = id;
+  selectedStars = 0;
+  document.getElementById('book-modal-title').textContent = id ? '📚 책 수정' : '📚 책 추가';
+  document.getElementById('book-delete-wrap').style.display = id ? 'block' : 'none';
+  document.querySelectorAll('#bm-stars span').forEach(s => s.classList.remove('lit'));
+
+  // 검색 결과 초기화
+  document.getElementById('isbn-result').style.display  = 'none';
+  document.getElementById('isbn-loading').style.display = 'none';
+  document.getElementById('isbn-error').style.display   = 'none';
+  window._isbnData = null;
+
+  if(id) {
+    const b = books.find(x=>x.id===id);
+    if(!b) return;
+    selectedColor = b.color || COVER_COLORS[0];
+    selectedStars = b.rating || 0;
+    document.getElementById('bm-title').value     = b.title||'';
+    document.getElementById('bm-author').value    = b.author||'';
+    document.getElementById('bm-publisher').value = b.publisher||'';
+    document.getElementById('bm-isbn').value      = b.isbn||'';
+    document.getElementById('bm-status').value    = b.status||'읽고싶음';
+    document.getElementById('bm-coverurl').value  = b.coverUrl||'';
+    document.getElementById('bm-memo').value      = b.memo||'';
+    if(selectedStars) setStars(selectedStars);
+    // 팔레트 선택 표시
+    document.querySelectorAll('#color-palette div').forEach((s,i) => {
+      s.style.borderColor = COVER_COLORS[i]===selectedColor ? '#e8b660' : 'transparent';
+    });
+  } else {
+    selectedColor = COVER_COLORS[0];
+    document.getElementById('bm-title').value     = '';
+    document.getElementById('bm-author').value    = '';
+    document.getElementById('bm-publisher').value = '';
+    document.getElementById('bm-isbn').value      = '';
+    document.getElementById('bm-status').value    = '읽고싶음';
+    document.getElementById('bm-coverurl').value  = '';
+    document.getElementById('bm-memo').value      = '';
+    document.querySelectorAll('#color-palette div').forEach((s,i) => {
+      s.style.borderColor = i===0 ? '#e8b660' : 'transparent';
+    });
+  }
+  updateCoverPreview();
+  document.getElementById('book-modal').classList.add('open');
+}
+
+async function saveBook() {
+  const title = document.getElementById('bm-title').value.trim();
+  if(!title) { showToast('제목을 입력하세요','err'); return; }
+
+  const status = document.getElementById('bm-status').value;
+  const today  = new Date().toISOString().slice(0,10);
+  const existing = editingId.book ? books.find(x=>x.id===editingId.book) : null;
+
+  const item = {
+    id:        editingId.book || genId(),
+    title,
+    author:    document.getElementById('bm-author').value.trim(),
+    publisher: document.getElementById('bm-publisher').value.trim(),
+    isbn:      document.getElementById('bm-isbn').value.trim(),
+    status,
+    rating:    selectedStars,
+    color:     selectedColor,
+    coverUrl:  document.getElementById('bm-coverurl').value.trim(),
+    memo:      document.getElementById('bm-memo').value.trim(),
+    addedAt:   existing?.addedAt || today,
+    doneAt:    status==='완독' ? (existing?.doneAt || today) : (existing?.doneAt || null)
+  };
+
+  if(editingId.book) {
+    const idx = books.findIndex(x=>x.id===editingId.book);
+    if(idx>=0) books[idx] = item;
+  } else {
+    books.push(item);
+  }
+
+  saveData(KEYS.books, books);
+  closeModal('book-modal');
+  showToast('📚 저장됐습니다!','ok');
+  renderAll();
+  await sheetSaveBook(item); // ☁️ 시트에도 저장
+}
+
+async function deleteBook() {
+  if(!editingId.book || !confirm('이 책을 삭제할까요?\n수집한 문장도 함께 삭제됩니다.')) return;
+  const deletedId = editingId.book;
+  books = books.filter(x=>x.id!==deletedId);
+  sentences = sentences.filter(s=>s.bookId!==deletedId);
+  saveData(KEYS.books, books);
+  saveData(KEYS.sentences, sentences);
+  closeModal('book-modal');
+  closeModal('detail-modal');
+  showToast('삭제됐습니다','ok');
+  renderAll();
+  await sheetDeleteBook(deletedId); // ☁️ 시트에서도 삭제
+}
+
+// ══════════════════════════════════════
+// 책 상세 모달
+// ══════════════════════════════════════
+function openDetailModal(id) {
+  const b = books.find(x=>x.id===id);
+  if(!b) return;
+  detailBookId = id;
+
+  // 표지
+  const cover   = document.getElementById('detail-cover');
+  const initials = (b.title||'책').slice(0,2);
+  cover.style.background = b.color || COVER_COLORS[0];
+  if(b.coverUrl) {
+    cover.innerHTML = `<img src="${b.coverUrl}" alt="${initials}"
+      style="width:100%;height:100%;object-fit:cover;display:block;border-radius:4px"
+      onerror="this.outerHTML='<div class=\"detail-cover-spine\"></div><span id=\"detail-cover-text\">${initials}</span>'">`;
+  } else {
+    cover.innerHTML = `<div class="detail-cover-spine"></div><span id="detail-cover-text">${initials}</span>`;
+  }
+
+  document.getElementById('detail-title').textContent = b.title;
+  document.getElementById('detail-meta').textContent =
+    [b.author, b.publisher, b.isbn?`ISBN ${b.isbn}`:''].filter(Boolean).join('\n');
+  document.getElementById('detail-rating').innerHTML =
+    b.rating ? `<span style="color:var(--gold);font-size:0.9rem">${'★'.repeat(b.rating)}${'☆'.repeat(5-b.rating)}</span>` : '';
+
+  // 메모
+  document.getElementById('detail-memo-block').innerHTML = b.memo
+    ? `<div style="background:var(--surface2);border-radius:8px;padding:10px 13px;font-size:0.83rem;color:var(--text2);line-height:1.7;margin-bottom:12px">${esc(b.memo)}</div>` : '';
+
+  // 상태/날짜
+  document.getElementById('detail-progress').innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <span class="status-badge s-${esc(b.status)}">${statusLabel(b.status)}</span>
+      ${b.addedAt?`<span style="font-size:0.72rem;color:var(--text3)">추가: ${esc(b.addedAt)}</span>`:''}
+      ${b.doneAt&&b.status==='완독'?`<span style="font-size:0.72rem;color:var(--amber)">완독: ${esc(b.doneAt)}</span>`:''}
+    </div>`;
+
+  // 이 책의 문장들
+  const bookSents = sentences.filter(s=>s.bookId===id);
+  const sentEl = document.getElementById('detail-sentences');
+  if(bookSents.length) {
+    sentEl.innerHTML = `<div class="section-label">✍️ 수집한 문장 (${bookSents.length})</div>`
+      + bookSents.map(s=>`
+        <div class="sentence-item" onclick="openSentModal('${esc(s.id)}')">
+          <div class="sent-text">"${esc(s.text)}"</div>
+          <div class="sent-meta">${s.page?`p.${esc(s.page)} · `:''}${esc(s.memo||'')}</div>
+        </div>`).join('');
+  } else {
+    sentEl.innerHTML = '';
+  }
+
+  document.getElementById('detail-modal').classList.add('open');
+}
+
+function editBookFromDetail() {
+  closeModal('detail-modal');
+  setTimeout(() => openBookModal(detailBookId), 200);
+}
+
+function openSentModalFromDetail() {
+  closeModal('detail-modal');
+  setTimeout(() => openSentModal(null, detailBookId), 200);
+}
+
+// ══════════════════════════════════════
+// 문장 수집 CRUD
+// ══════════════════════════════════════
+function populateSentBookSelect(presetId) {
+  const sel = document.getElementById('sentm-bookid');
+  sel.innerHTML = books.map(b =>
+    `<option value="${b.id}" ${b.id===presetId?'selected':''}>${b.title}</option>`
+  ).join('');
+}
+
+function openSentModal(id, presetBookId) {
+  editingId.sent = id;
+  document.getElementById('sent-delete-wrap').style.display = id ? 'block' : 'none';
+  populateSentBookSelect(presetBookId || (id ? sentences.find(s=>s.id===id)?.bookId : null));
+
+  if(id) {
+    const s = sentences.find(x=>x.id===id);
+    if(!s) return;
+    document.getElementById('sentm-bookid').value = s.bookId||'';
+    document.getElementById('sentm-text').value   = s.text||'';
+    document.getElementById('sentm-page').value   = s.page||'';
+    document.getElementById('sentm-memo').value   = s.memo||'';
+  } else {
+    document.getElementById('sentm-text').value   = '';
+    document.getElementById('sentm-page').value   = '';
+    document.getElementById('sentm-memo').value   = '';
+  }
+  document.getElementById('sent-modal').classList.add('open');
+}
+
+async function saveSentence() {
+  const text   = document.getElementById('sentm-text').value.trim();
+  const bookId = document.getElementById('sentm-bookid').value;
+  if(!text) { showToast('문장을 입력하세요','err'); return; }
+  if(!bookId) { showToast('책을 선택하세요','err'); return; }
+
+  const item = {
+    id:      editingId.sent || genId(),
+    bookId,
+    text,
+    page:    document.getElementById('sentm-page').value,
+    memo:    document.getElementById('sentm-memo').value.trim(),
+    savedAt: new Date().toISOString().slice(0,10)
+  };
+
+  if(editingId.sent) {
+    const idx = sentences.findIndex(x=>x.id===editingId.sent);
+    if(idx>=0) sentences[idx] = item;
+  } else { sentences.push(item); }
+
+  saveData(KEYS.sentences, sentences);
+  closeModal('sent-modal');
+  showToast('✍️ 문장 저장!','ok');
+  renderSentList();
+  updateStats();
+  await sheetSaveSentence(item); // ☁️ 시트에도 저장
+}
+
+async function deleteSentence() {
+  if(!editingId.sent || !confirm('삭제할까요?')) return;
+  const deletedId = editingId.sent;
+  sentences = sentences.filter(x=>x.id!==deletedId);
+  saveData(KEYS.sentences, sentences);
+  closeModal('sent-modal');
+  showToast('삭제됐습니다','ok');
+  renderSentList();
+  await sheetDeleteSentence(deletedId); // ☁️ 시트에서도 삭제
+}
+}
+
+function renderSentList() {
+  const el = document.getElementById('sent-list');
+  const sorted = [...sentences].sort((a,b)=>b.savedAt.localeCompare(a.savedAt));
+  if(!sorted.length) {
+    el.innerHTML = '<div class="empty"><div class="icon">✍️</div><p>수집한 문장이 없어요<br>책 상세에서 문장을 추가해보세요</p></div>';
+    return;
+  }
+
+  // 책별 그룹
+  const byBook = {};
+  sorted.forEach(s => {
+    if(!byBook[s.bookId]) byBook[s.bookId] = [];
+    byBook[s.bookId].push(s);
+  });
+
+  let html = '';
+  Object.entries(byBook).forEach(([bookId, sents]) => {
+    const book = books.find(b=>b.id===bookId);
+    const bookTitle = book ? book.title : '알 수 없는 책';
+    html += `<div class="sent-book-tag">📖 ${esc(bookTitle)}</div>`;
+    html += sents.map(s => `
+      <div class="sentence-item" onclick="openSentModal('${esc(s.id)}')">
+        <div class="sent-text">"${esc(s.text)}"</div>
+        <div class="sent-meta">${s.page?`p.${esc(s.page)}`:''} ${s.memo?'· '+esc(s.memo):''}</div>
+      </div>`).join('');
+  });
+  el.innerHTML = html;
+}
+
+// ══════════════════════════════════════
+// 모달
+// ══════════════════════════════════════
+function closeModal(id, e) {
+  if(e && e.target !== document.getElementById(id)) return;
+  document.getElementById(id).classList.remove('open');
+}
+
+// ══════════════════════════════════════
+// Open Library ISBN 자동 검색
+// ══════════════════════════════════════
+async function searchByISBN() {
+  const isbn = document.getElementById('bm-isbn').value.trim();
+  if(!isbn || isbn.length < 10) { showToast('ISBN을 입력하세요 (10~13자리)', 'err'); return; }
+
+  const resultEl  = document.getElementById('isbn-result');
+  const loadingEl = document.getElementById('isbn-loading');
+  const errorEl   = document.getElementById('isbn-error');
+  const bodyEl    = document.getElementById('isbn-result-body');
+
+  resultEl.style.display  = 'none';
+  errorEl.style.display   = 'none';
+  loadingEl.style.display = 'block';
+  window._isbnData = null;
+
+  try {
+    // Open Library API (CORS 허용, 무료, 키 불필요)
+    const url = `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscop=data`;
+    const res  = await fetch(url);
+    const json = await res.json();
+    const key  = `ISBN:${isbn}`;
+    const book = json[key];
+
+    loadingEl.style.display = 'none';
+
+    if(!book) {
+      // Open Library에 없으면 제목 검색 안내
+      errorEl.textContent = '검색 결과가 없어요. 제목·저자를 직접 입력해 주세요.';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    // 데이터 파싱
+    const title     = book.title || '';
+    const authors   = book.authors  ? book.authors.map(a=>a.name).join(', ')  : '';
+    const publishers= book.publishers ? book.publishers.map(p=>p.name).join(', ') : '';
+    const coverUrl  = book.cover ? (book.cover.large || book.cover.medium || book.cover.small || '') : '';
+    const publishDate = book.publish_date || '';
+
+    window._isbnData = { title, authors, publishers, coverUrl, publishDate };
+
+    bodyEl.innerHTML = `
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        ${coverUrl ? `<img src="${coverUrl}" style="width:44px;height:62px;object-fit:cover;border-radius:4px;flex-shrink:0">` : ''}
+        <div>
+          <div style="font-weight:700;color:var(--text);margin-bottom:3px">${esc(title)}</div>
+          ${authors    ? `<div style="color:var(--text3);font-size:0.78rem">${esc(authors)}</div>` : ''}
+          ${publishers ? `<div style="color:var(--text3);font-size:0.78rem">${esc(publishers)}</div>` : ''}
+          ${publishDate? `<div style="color:var(--text4);font-size:0.72rem;margin-top:2px">${esc(publishDate)}</div>` : ''}
+        </div>
+      </div>`;
+    resultEl.style.display = 'block';
+
+  } catch(e) {
+    loadingEl.style.display = 'none';
+    errorEl.textContent = '검색 실패. 네트워크를 확인해주세요.';
+    errorEl.style.display = 'block';
+  }
+}
+
+function applyISBNResult() {
+  const data = window._isbnData;
+  if(!data) return;
+
+  if(data.title)      document.getElementById('bm-title').value     = data.title;
+  if(data.authors)    document.getElementById('bm-author').value    = data.authors;
+  if(data.publishers) document.getElementById('bm-publisher').value = data.publishers;
+  if(data.coverUrl)   document.getElementById('bm-coverurl').value  = data.coverUrl;
+
+  updateCoverPreview();
+  document.getElementById('isbn-result').style.display = 'none';
+  showToast('✅ 책 정보가 채워졌어요!', 'ok');
+}
+
+// ══════════════════════════════════════
+// 서점 앱/웹 바로가기
+// ══════════════════════════════════════
+function openBookStore(store) {
+  const title = document.getElementById('bm-title').value.trim();
+  const query = encodeURIComponent(title || '');
+
+  const stores = {
+    aladin: {
+      app:  `aladin://search?query=${query}`,
+      web:  `https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=Book&SearchWord=${query}`,
+      name: '알라딘'
+    },
+    kyobo: {
+      app:  `kyobobook://search?keyword=${query}`,
+      web:  `https://search.kyobobook.co.kr/search?keyword=${query}`,
+      name: '교보문고'
+    },
+    yes24: {
+      app:  `yes24://search?keyword=${query}`,
+      web:  `https://www.yes24.com/Product/Search?domain=ALL&query=${query}`,
+      name: 'YES24'
+    }
+  };
+
+  const s = stores[store];
+  if (!s) return;
+
+  // 앱 딥링크 시도 → 실패 시 모바일 웹으로 fallback
+  const appLink = document.createElement('a');
+  appLink.href = s.app;
+
+  let opened = false;
+  const timer = setTimeout(() => {
+    if (!opened) window.open(s.web, '_blank');
+  }, 1200);
+
+  window.addEventListener('blur', () => {
+    opened = true;
+    clearTimeout(timer);
+  }, { once: true });
+
+  appLink.click();
+
+  // 앱 링크가 작동 안 할 경우 바로 웹으로
+  setTimeout(() => {
+    if (!opened) {
+      clearTimeout(timer);
+      window.open(s.web, '_blank');
+    }
+  }, 1200);
+}
+
+// ══════════════════════════════════════
+// 내보내기 / 불러오기
+// ══════════════════════════════════════
+function exportData() {
+  const data = { books, sentences, exportedAt: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `나의서재_백업_${new Date().toISOString().slice(0,10)}.json`;
+  a.click(); URL.revokeObjectURL(a.href);
+  showToast('📤 백업 파일 저장!','ok');
+}
+
+function importData(e) {
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if(!confirm('현재 데이터를 덮어씁니다. 계속할까요?')) return;
+      books     = data.books     || []; saveData(KEYS.books, books);
+      sentences = data.sentences || []; saveData(KEYS.sentences, sentences);
+      renderAll();
+      showToast('📥 불러오기 완료!','ok');
+    } catch { showToast('파일 형식 오류','err'); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ══════════════════════════════════════
+// 토스트
+// ══════════════════════════════════════
+let _tt;
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type?' '+type:'');
+  clearTimeout(_tt);
+  _tt = setTimeout(() => t.className='toast', 2600);
+}
+</script>
+</body>
+</html>
